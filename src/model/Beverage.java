@@ -1,6 +1,6 @@
 package model;
 
-public abstract class Beverage {
+public abstract class Beverage implements Cloneable {
 
     private String description;
 
@@ -12,6 +12,11 @@ public abstract class Beverage {
     }
 
     public abstract double cost();
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
     public double getCost() {
         return cost;

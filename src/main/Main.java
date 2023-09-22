@@ -8,9 +8,9 @@ import java.util.Scanner;
 
 public class Main {
 
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
 
-    private static List<Beverage> ingredients = new ArrayList<>();
+    private static final List<Beverage> ingredients = new ArrayList<>();
     static{
         ingredients.add(new DarkRoast("Basic darkroast", 5));
         ingredients.add(new HouseBlend("Basic houseblend", 7));
@@ -24,14 +24,16 @@ public class Main {
 
     }
 
-    public static void main(String[] args) {
+    private static final List<CondimentDecorator> selectedIngredients = new ArrayList<>();
+
+    public static void main(String[] args) throws CloneNotSupportedException {
         System.out.println("Bienvenido!!!");
 
         selectBaseBeverage();
     }
 
-    public static void selectBaseBeverage() {
-        System.out.println("\n\n--- Bebida base ---\n" +
+    public static void selectBaseBeverage() throws CloneNotSupportedException {
+        System.out.println("\n--- Bebida base ---\n" +
                 "Crea tu bebida. Selecciona la bebida base que quieres:" +
                 "\n1) Dark roast" +
                 "\n2) House blend" +
@@ -40,11 +42,11 @@ public class Main {
 
         int selection = Integer.parseInt(scanner.nextLine());
 
-        selectIngredients(selection, new ArrayList<Integer>());
+        selectIngredients(selection);
     }
 
-    public static void selectIngredients(int baseBeverage, ArrayList<Integer> ingredients) {
-        System.out.println("\n\n --- Ingredientes ---" +
+    public static void selectIngredients(int baseBeverage) throws CloneNotSupportedException {
+        System.out.println("\n --- Ingredientes ---" +
                 "\n1) Milk" +
                 "\n2) Mocha" +
                 "\n3) Soy" +
@@ -54,23 +56,33 @@ public class Main {
         int selection = Integer.parseInt(scanner.nextLine());
 
         if (selection == 0) {
-            buildBeverage(baseBeverage, ingredients);
+            buildBeverage(baseBeverage);
 
             return;
         }
 
-        ingredients.add(selection);
-        selectIngredients(baseBeverage, ingredients);
+        selectedIngredients.add((CondimentDecorator) determineIngredient(selection).clone());
+
+        selectIngredients(baseBeverage);
     }
 
-    public static void buildBeverage(int baseBeverage, ArrayList<Integer> ingredients) {
-        System.out.println("\n\n--- Resumen bebida ---" +
+    public static void buildBeverage(int baseBeverage) {
+        System.out.println("\n--- Resumen bebida ---" +
                 "\nIngredientes: ");
 
-        for (Integer ingredientInt : ingredients) {
-            Beverage ingredient = determineIngredient(ingredientInt);
-            System.out.println("* " + (ingredient.getDescription()));
+        Beverage base = Main.ingredients.get(baseBeverage-1);
+
+        System.out.println("\n* Base: " + base.getDescription() + " - " + base.getCost());
+
+        for (int i = 0; i < selectedIngredients.size(); i++) {
+            CondimentDecorator aux = selectedIngredients.get(i);
+
+            System.out.println("* " + aux.getDescription() + " - " + aux.getCost());
+
+            aux.setBeverage((i != selectedIngredients.size()-1) ? selectedIngredients.get(i + 1) : base);
         }
+
+        System.out.println("\nEl costo es: $" + selectedIngredients.get(0).cost());
     }
 
     private static Beverage determineIngredient(int ingredient) {

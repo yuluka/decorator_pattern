@@ -22,6 +22,9 @@ public abstract class CondimentDecorator extends Beverage {
             return getCost();
         }
 
-        return getCost() + getBeverage().getCost();
+        Beverage a = getBeverage();
+
+//        return getCost() + getBeverage().getCost();
+        return getCost() + getBeverage().cost();
     }
 }
